@@ -1,0 +1,8 @@
+Projeto 1 - Computacao Grafica
+
+# Instalar a biblioteca SOIL:
+    $ sudo apt-get install libsoil-dev
+
+# Compilar e rodar:
+    $ make
+    $ make run

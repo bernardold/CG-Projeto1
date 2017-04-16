@@ -15,6 +15,7 @@
 const GLint w = 1024, h = 640;
 GLfloat theta = 60.0f;
 GLuint texture = 0;
+int leftMouseButtonDown = 0, rightMouseButtonDown = 0;
 /************************/
 
 void init(void)
@@ -71,21 +72,19 @@ void background(void)
 void circle(void)
 {
     GLint N = 100;
-    // Ponto 471, 518
+    // Ponto do dedo: 471, 518
     GLfloat x = 471.0f, y = 518.0f, r = 5.0f, theta = 0, h = (2 * 3.1415) / N;
     // h = 360 graus dividido por N retangulos
 
     for( ; theta <= 2 * 3.1415; theta += h)
     {
-        /* Definicao de primitivas */
         glBegin(GL_TRIANGLES);
           glVertex2f(x, y);
+          // Equacoes parametrizadas da circunferencia (circ. eh uma elipse)
           glVertex2f(x + r * cos(theta), y + r * sin(theta));
           glVertex2f(x + r * cos(theta+h), y + r * sin(theta+h));
-          // Equacoes parametrizadas da circunferencia (circ. eh uma elipse)
         glEnd();
     }
-
 }
 
 void triangles(void)
@@ -108,12 +107,36 @@ void triangles(void)
     }
 }
 
+void mouseHold(void)
+{
+    if(leftMouseButtonDown)
+        theta += 0.5f;
+    if(rightMouseButtonDown)
+        theta -= 0.5f;
+}
+
+void onMouseClick(int button, int state, int x, int y) 
+{
+    if(button == GLUT_LEFT_BUTTON)
+    {   
+        leftMouseButtonDown = (state == GLUT_DOWN);
+    }
+    else if(button == GLUT_RIGHT_BUTTON)
+    {
+        rightMouseButtonDown = (state == GLUT_DOWN);
+    }
+ 
+    glutPostRedisplay();    // Chama a funcao DISPLAY apos a atualizacao
+}
+
 void display(void) 
 { 
     glClear(GL_COLOR_BUFFER_BIT);
 
     background();
 
+    mouseHold();
+    
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -125,26 +148,9 @@ void display(void)
 
     glColor3f(1.0f, 1.0f, 1.0f);
 
-    glutSwapBuffers();
+    //glutSwapBuffers();
+    glutPostRedisplay();    // Chama a funcao DISPLAY apos a atualizacao
     glFlush();
-}
-
-void onMouseClick(int button, int state, int x, int y) 
-{
-    // Tratamento apenas do click DOWN
-    if(state == GLUT_DOWN)
-    {
-        if(button == GLUT_LEFT_BUTTON)
-        {   
-            theta += 10.0;
-        }
-        else if(button == GLUT_RIGHT_BUTTON)
-        {
-            theta += -10.0;
-        }
-    }
- 
-    glutPostRedisplay(); // Chama a funcao DISPLAY apos a atualizacao
 }
 
 void main(int argc, char **argv)
@@ -159,7 +165,7 @@ void main(int argc, char **argv)
     loadTexture();
 
     glutDisplayFunc(display);
-    //glutReshapeFunc(reshape);
+    glutReshapeFunc(reshape);
     glutMouseFunc(onMouseClick);
     glutMainLoop();
 }

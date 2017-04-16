@@ -12,6 +12,7 @@
 		BA438A9A1EA3D0AA00D1D702 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA438A991EA3D0AA00D1D702 /* OpenGL.framework */; };
 		BA438A9C1EA3D0AF00D1D702 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA438A9B1EA3D0AF00D1D702 /* GLUT.framework */; };
 		BA438A9E1EA3D0B700D1D702 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA438A9D1EA3D0B700D1D702 /* CoreFoundation.framework */; };
+		BA4E55C11EA3E72D002029E1 /* libSOIL.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BA4E55C01EA3E72D002029E1 /* libSOIL.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -36,6 +37,8 @@
 		BA438A991EA3D0AA00D1D702 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		BA438A9B1EA3D0AF00D1D702 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		BA438A9D1EA3D0B700D1D702 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		BA4E55BE1EA3E5E6002029E1 /* SOIL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SOIL.h; path = ../../../../../../../opt/local/include/SOIL/SOIL.h; sourceTree = "<group>"; };
+		BA4E55C01EA3E72D002029E1 /* libSOIL.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSOIL.dylib; path = ../../../../../../../opt/local/lib/libSOIL.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +46,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA4E55C11EA3E72D002029E1 /* libSOIL.dylib in Frameworks */,
 				BA438A9E1EA3D0B700D1D702 /* CoreFoundation.framework in Frameworks */,
 				BA438A9C1EA3D0AF00D1D702 /* GLUT.framework in Frameworks */,
 				BA438A9A1EA3D0AA00D1D702 /* OpenGL.framework in Frameworks */,
@@ -84,6 +88,8 @@
 		BA438A981EA3D0AA00D1D702 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BA4E55C01EA3E72D002029E1 /* libSOIL.dylib */,
+				BA4E55BE1EA3E5E6002029E1 /* SOIL.h */,
 				BA438A9D1EA3D0B700D1D702 /* CoreFoundation.framework */,
 				BA438A9B1EA3D0AF00D1D702 /* GLUT.framework */,
 				BA438A991EA3D0AA00D1D702 /* OpenGL.framework */,
@@ -248,6 +254,8 @@
 		BA438A8F1EA3D07B00D1D702 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = /opt/local/include/SOIL;
+				LIBRARY_SEARCH_PATHS = /opt/local/lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -255,6 +263,8 @@
 		BA438A901EA3D07B00D1D702 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = /opt/local/include/SOIL;
+				LIBRARY_SEARCH_PATHS = /opt/local/lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -278,6 +288,7 @@
 				BA438A901EA3D07B00D1D702 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

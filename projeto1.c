@@ -1,26 +1,35 @@
+#ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
+#include <OpenGL/gl.h>  // Header File For The OpenGL32 Library
+#include <OpenGL/glu.h> // Header File For The GLu32 Library
+#include <GLUT/glut.h>  // Header File For The GLut Library
+#else
 #include <GL/glut.h>
+#endif
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include "SOIL.h"
 
-GLfloat R = 0.0f, G = 0.0f, B = 0.0f; // variaveis globais
+/*  Variaveis globais   */ 
+const GLint w = 1024, h = 640;
+GLfloat theta = 60.0f;
 GLuint texture = 0;
-
-GLfloat sorteia_cor() 
-{
-    return (rand()*1.0f) / (RAND_MAX*1.0f);
-}
+/************************/
 
 void init(void)
 {
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glMatrixMode(GL_PROJECTION); // Especificoes de observacao de cena
-    gluOrtho2D(0, 1024, 0, 640);
+    glMatrixMode(GL_PROJECTION);    // Especificoes de observacao de cena
+    gluOrtho2D(0, w, 0, h);
 }
 
-GLuint loadTexture()
+void reshape(GLsizei w, GLsizei h)
+{
+    glutReshapeWindow(1024, 640);   // Nao permite a alteracao de tamanho da janela
+}
+
+void loadTexture(void)
 {
     texture = SOIL_load_OGL_texture(
                     "image2.png",
@@ -40,50 +49,23 @@ GLuint loadTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
-// void orthogonalStart(void) 
-// {
-//     glMatrixMode(GL_PROJECTION);
-//     glPushMatrix();
-//     glLoadIdentity();
-//     gluOrtho2D(0, 1024, 0, 640);
-//     glMatrixMode(GL_MODELVIEW);
-// }
-
-// void orthogonalEnd(void)
-// {
-//     glMatrixMode(GL_PROJECTION);
-//     glPopMatrix();
-//     glMatrixMode(GL_MODELVIEW);
-// }
-
 void background(void)
 {
-    loadTexture();
-    
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, texture); 
+    glBindTexture(GL_TEXTURE_2D, texture);  // Define a textura corrente
     
-    //orthogonalStart();
-    glMatrixMode(GL_MODELVIEW);
+    //glMatrixMode(GL_MODELVIEW); // pode comentar tambem
 
-    // texture width/height
-    const int iw = 1024;
-    const int ih = 640;
-
-    //glPushMatrix();
     glBegin(GL_QUADS);
+        // TexCoord2i: Coord. dos pontos na textura
+        // Vertex2i: Coord. dos pontos no poligono
         glTexCoord2i(0, 0); glVertex2i(0, 0);
-        glTexCoord2i(1, 0); glVertex2i(iw, 0);
-        glTexCoord2i(1, 1); glVertex2i(iw, ih);
-        glTexCoord2i(0, 1); glVertex2i(0, ih);
+        glTexCoord2i(1, 0); glVertex2i(w, 0);
+        glTexCoord2i(1, 1); glVertex2i(w, h);
+        glTexCoord2i(0, 1); glVertex2i(0, h);
     glEnd();
-    //glPopMatrix();
     
     glDisable(GL_TEXTURE_2D);
-    //glDepthMask(GL_FALSE);
-    //glDisable(GL_DEPTH_TEST);
-
-    //orthogonalEnd();
 }
 
 void circle(void)
@@ -108,9 +90,9 @@ void circle(void)
 
 void triangles(void)
 {
-    GLfloat theta;
+    int i;
     // Ao fim do loop, a matriz MODELVIEW voltara a ser a identidade
-    for(theta = 60.0; theta <= 360.0; theta += 90.0)
+    for(i = 0; i < 4; i++, theta += 90.0f)
     {
         glTranslatef(471.0, 518.0, 0.0);
         glRotatef(theta, 0.0, 0.0, 1.0);
@@ -121,11 +103,14 @@ void triangles(void)
             glVertex2f(515.0, 503.0);
         glEnd();
         glLoadIdentity();
+        if(theta >= 360.0)
+            theta -= 360.0;
     }
 }
 
 void display(void) 
 { 
+    glClear(GL_COLOR_BUFFER_BIT);
 
     background();
 
@@ -139,32 +124,27 @@ void display(void)
     circle();
 
     glColor3f(1.0f, 1.0f, 1.0f);
-    
-    //glutPostRedisplay();
+
     glutSwapBuffers();
     glFlush();
 }
 
-void on_mouseClick(int botao_clicado, int estado_do_click, int x_mouse_position, int y_mouse_position) {
- 
-    // Sem o primeiro if, ela trata o click UP e DOWN
-    if(estado_do_click == GLUT_DOWN)
+void onMouseClick(int button, int state, int x, int y) 
+{
+    // Tratamento apenas do click DOWN
+    if(state == GLUT_DOWN)
     {
-        if(botao_clicado == GLUT_RIGHT_BUTTON)
-        {
-            // R = 0.0f;
-            // G = 0.0f;
-            // B = 0.0f;
+        if(button == GLUT_LEFT_BUTTON)
+        {   
+            theta += 10.0;
         }
-        else if(botao_clicado == GLUT_LEFT_BUTTON)
+        else if(button == GLUT_RIGHT_BUTTON)
         {
-            // R = sorteia_cor();
-            // G = sorteia_cor();
-            // B = sorteia_cor();
+            theta += -10.0;
         }
     }
  
-    glutPostRedisplay(); // Forca a glut redesenhar a cena apзs a atualizacao, chama a funcao desenha de novo
+    glutPostRedisplay(); // Chama a funcao DISPLAY apos a atualizacao
 }
 
 void main(int argc, char **argv)
@@ -176,7 +156,10 @@ void main(int argc, char **argv)
     glutCreateWindow("Projeto 1 - Computacao Grafica");
 
     init();
+    loadTexture();
+
     glutDisplayFunc(display);
-    //glutMouseFunc(on_mouseClick);
+    //glutReshapeFunc(reshape);
+    glutMouseFunc(onMouseClick);
     glutMainLoop();
 }

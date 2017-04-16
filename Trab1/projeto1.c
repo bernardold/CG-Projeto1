@@ -2,10 +2,19 @@
 *   Fonte: http://stackoverflow.com/questions/8249282/set-background-image-of-an-opengl-window
 */
 
+
+#ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
+#include <OpenGL/gl.h> // Header File For The OpenGL32 Library
+#include <OpenGL/glu.h> // Header File For The GLu32 Library
+#include <GLUT/glut.h> // Header File For The GLut Library
+#else
 #include <GL/glut.h>
+#endif
 #include <stdlib.h>
 #include <stdio.h>
 #include "SOIL.h"
+
 
 GLint w1 = 0, h1 = 0;
 GLuint texture = 0;
@@ -89,11 +98,12 @@ GLuint LoadTexture()
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    
+    return texture;
 }
 
 
-void main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
     glutInitWindowSize(1024, 640);
@@ -104,6 +114,8 @@ void main(int argc, char **argv)
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutMainLoop();
+    
+    return 0;
 }
 
 // GLuint texture;

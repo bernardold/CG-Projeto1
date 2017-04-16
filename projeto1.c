@@ -1,78 +1,29 @@
-/*
-*   Fonte: http://stackoverflow.com/questions/8249282/set-background-image-of-an-opengl-window
-*/
-
 #include <GL/glut.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include "SOIL.h"
 
-GLint w1 = 0, h1 = 0;
+GLfloat R = 0.0f, G = 0.0f, B = 0.0f; // variaveis globais
 GLuint texture = 0;
 
-void reshape(GLsizei w, GLsizei h)
+GLfloat sorteia_cor() 
 {
-    w1 = w;
-    h1 = h;
-    glViewport(0, 0, w, h);
+    return (rand()*1.0f) / (RAND_MAX*1.0f);
 }
 
-void orthogonalStart(void) 
+void init(void)
 {
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(-w1/2, w1/2, -h1/2, h1/2);
-    glMatrixMode(GL_MODELVIEW);
-}
-
-void orthogonalEnd(void)
-{
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-}
-
-void background(void)
-{
-    glBindTexture(GL_TEXTURE_2D, texture); 
-
-    orthogonalStart();
-
-    // texture width/height
-    const int iw = 1024;
-    const int ih = 640;
-
-    glPushMatrix();
-    glTranslatef(-iw/2, -ih/2, 0);
-    glBegin(GL_QUADS);
-        glTexCoord2i(0,0); glVertex2i(0, 0);
-        glTexCoord2i(1,0); glVertex2i(iw, 0);
-        glTexCoord2i(1,1); glVertex2i(iw, ih);
-        glTexCoord2i(0,1); glVertex2i(0, ih);
-    glEnd();
-    glPopMatrix();
-
-    orthogonalEnd();
-}
-
-void display(void)
-{
-    glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    glLoadIdentity();
-    glEnable(GL_TEXTURE_2D);
-
-    background();
-    gluLookAt(0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-
-    glutSwapBuffers();
+    glMatrixMode(GL_PROJECTION); // Especificoes de observacao de cena
+    gluOrtho2D(0, 1024, 0, 640);
 }
 
-GLuint LoadTexture()
+GLuint loadTexture()
 {
     texture = SOIL_load_OGL_texture(
-                    "image1.png",
+                    "image2.png",
                     SOIL_LOAD_AUTO,
                     SOIL_CREATE_NEW_ID,
                     SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
@@ -85,12 +36,136 @@ GLuint LoadTexture()
     }
 
     glBindTexture(GL_TEXTURE_2D, texture); 
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE); 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
+// void orthogonalStart(void) 
+// {
+//     glMatrixMode(GL_PROJECTION);
+//     glPushMatrix();
+//     glLoadIdentity();
+//     gluOrtho2D(0, 1024, 0, 640);
+//     glMatrixMode(GL_MODELVIEW);
+// }
+
+// void orthogonalEnd(void)
+// {
+//     glMatrixMode(GL_PROJECTION);
+//     glPopMatrix();
+//     glMatrixMode(GL_MODELVIEW);
+// }
+
+void background(void)
+{
+    loadTexture();
+    
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texture); 
+    
+    //orthogonalStart();
+    glMatrixMode(GL_MODELVIEW);
+
+    // texture width/height
+    const int iw = 1024;
+    const int ih = 640;
+
+    //glPushMatrix();
+    glBegin(GL_QUADS);
+        glTexCoord2i(0, 0); glVertex2i(0, 0);
+        glTexCoord2i(1, 0); glVertex2i(iw, 0);
+        glTexCoord2i(1, 1); glVertex2i(iw, ih);
+        glTexCoord2i(0, 1); glVertex2i(0, ih);
+    glEnd();
+    //glPopMatrix();
+    
+    glDisable(GL_TEXTURE_2D);
+    //glDepthMask(GL_FALSE);
+    //glDisable(GL_DEPTH_TEST);
+
+    //orthogonalEnd();
+}
+
+void circle(void)
+{
+    GLint N = 100;
+    // Ponto 471, 518
+    GLfloat x = 471.0f, y = 518.0f, r = 5.0f, theta = 0, h = (2 * 3.1415) / N;
+    // h = 360 graus dividido por N retangulos
+
+    for( ; theta <= 2 * 3.1415; theta += h)
+    {
+        /* Definicao de primitivas */
+        glBegin(GL_TRIANGLES);
+          glVertex2f(x, y);
+          glVertex2f(x + r * cos(theta), y + r * sin(theta));
+          glVertex2f(x + r * cos(theta+h), y + r * sin(theta+h));
+          // Equacoes parametrizadas da circunferencia (circ. eh uma elipse)
+        glEnd();
+    }
+
+}
+
+void triangles(void)
+{
+    GLfloat theta;
+    // Ao fim do loop, a matriz MODELVIEW voltara a ser a identidade
+    for(theta = 60.0; theta <= 360.0; theta += 90.0)
+    {
+        glTranslatef(471.0, 518.0, 0.0);
+        glRotatef(theta, 0.0, 0.0, 1.0);
+        glTranslatef(-471.0, -518.0, 0.0);
+        glBegin(GL_TRIANGLES);
+            glVertex2f(471.0, 518.0);
+            glVertex2f(515.0, 537.0);
+            glVertex2f(515.0, 503.0);
+        glEnd();
+        glLoadIdentity();
+    }
+}
+
+void display(void) 
+{ 
+
+    background();
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glColor3f(1.0f, 1.0f, 0.0f);
+    triangles();
+
+    glColor3f(1.0f, 0.0f, 0.0f);
+    circle();
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+    
+    //glutPostRedisplay();
+    glutSwapBuffers();
+    glFlush();
+}
+
+void on_mouseClick(int botao_clicado, int estado_do_click, int x_mouse_position, int y_mouse_position) {
+ 
+    // Sem o primeiro if, ela trata o click UP e DOWN
+    if(estado_do_click == GLUT_DOWN)
+    {
+        if(botao_clicado == GLUT_RIGHT_BUTTON)
+        {
+            // R = 0.0f;
+            // G = 0.0f;
+            // B = 0.0f;
+        }
+        else if(botao_clicado == GLUT_LEFT_BUTTON)
+        {
+            // R = sorteia_cor();
+            // G = sorteia_cor();
+            // B = sorteia_cor();
+        }
+    }
+ 
+    glutPostRedisplay(); // Forca a glut redesenhar a cena apзs a atualizacao, chama a funcao desenha de novo
+}
 
 void main(int argc, char **argv)
 {
@@ -100,107 +175,8 @@ void main(int argc, char **argv)
     glutInitWindowPosition(100, 50);
     glutCreateWindow("Projeto 1 - Computacao Grafica");
 
-    LoadTexture();
+    init();
     glutDisplayFunc(display);
-    glutReshapeFunc(reshape);
+    //glutMouseFunc(on_mouseClick);
     glutMainLoop();
 }
-
-// GLuint texture;
-
-// void LoadGLTextures()
-// {
-//     texture = SOIL_load_OGL_texture
-//                 (
-//                     "image1.png",
-//                     SOIL_LOAD_AUTO,
-//                     SOIL_CREATE_NEW_ID,
-//                     SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
-//                 );
-
-//     if(texture == 0)
-//     {
-//         printf("SOIL loading error: '%s'\n", SOIL_last_result());
-//         exit(EXIT_FAILURE);
-//     }
-
-//     glBindTexture(GL_TEXTURE_2D, texture);
-//     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-// }
-
-
-// void init()
-// {
-//     glEnable(GL_TEXTURE_2D);
-//     glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-//     gluOrtho2D(0, 1024, 0, 640);
-//     //glShadeModel(GL_FLAT);
-// }
-
-// void display(void)
-// {
-//     glClear(GL_COLOR_BUFFER_BIT);
-//     //glEnable(GL_TEXTURE_2D);
-//     glLoadIdentity();
-//     LoadGLTextures();
-//     glBindTexture(GL_TEXTURE_2D, texture);
-//     glColor3f(1.0f, 1.0f, 1.0f);
-//     glBegin(GL_QUADS);
-//         // glTexCoord2d(0.0,0.0); glVertex2d(0.0,0.0);
-//         // glTexCoord2d(1.0,0.0); glVertex2d(1024.0,0.0);
-//         // glTexCoord2d(1.0,1.0); glVertex2d(1024.0,512.0);
-//         // glTexCoord2d(0.0,1.0); glVertex2d(0.0,512.0);
-//         glTexCoord2f(0.0f, 0.25f); glVertex3f(0.25f, 0.25f, 0.0f);
-//         glTexCoord2f(1.0f, 0.0f); glVertex3f(0.75f, 0.25f, 0.0f);
-//         glTexCoord2f(1.0f, 1.0f); glVertex3f(1.0f, 0.75f, 0.0f);
-//         glTexCoord2f(0.0f, 1.0f); glVertex3f(1.0f, 1.0f, 0.0f);
-//     glEnd();
-
-//     glFlush();
-// }
-
-// void main(int argc, char *argv[])
-// {
-//     glutInit(&argc, argv);
-//     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-//     glutInitWindowSize(1024, 640);
-//     glutInitWindowPosition(200, 200);
-//     glutCreateWindow("Projeto 1 - CG");
-
-//     init();
-//     glutDisplayFunc(display);
-//     glutMainLoop();
-// }
-
-/*****************************************************************************************************/
-
-// #include <GL/glut.h>    // Ja inclui a GL e a GLU
-// #include "SOIL.h"
-
-// void init(void)
-// {
-//     glClearColor(0.3f, 1.0f, 0.7f, 0.0f);   // Define a cor branca para o fundo 
-//     gluOrtho2D(0, 1024, 0, 720);    // Define o plano ortogonal em que a cena sera construida
-// }
-
-// void desenha(void)
-// {
-//     glClear(GL_COLOR_BUFFER_BIT);   // Pinta a tela com a cor de fundo
-
-//     glFlush();  // Forca a OpenGL a colocar na tela o que desenhamos
-// }
-
-// void main(int argc, char* argv[])
-// {
-//     glutInit(&argc, argv);                              // Inicia uma instancia da glut
-//     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);        // Define o modo de display do buffer
-//     glutInitWindowSize(1024, 720);                      // Define o tamanho em pixels da janela
-//     glutCreateWindow("Projeto 1 - Computacao Grafica"); // Define o titulo da janela
-//     glutDisplayFunc(desenha);                           // Estabelece que a funcao de rendering eh a funcao "desenha()"
- 
-//     //glutMouseFunc(on_mouseClick);   // Evento de click do mouse (binding)
-//                                     // Espera recebero ponteiro para uma funcao com 4 args
-//     init();
-//     glutMainLoop();                 // Inicia as operacoes conforme as especificacoes anteriores
-// }

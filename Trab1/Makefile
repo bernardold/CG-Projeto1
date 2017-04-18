@@ -3,7 +3,6 @@ CFLAGS =
 PROG = projeto1
 SRCS = projeto1.c
 LIBS = -lGLU -lGL -lglut -lSOIL -lm -pthread
-#-lSDL_image
 
 all: $(PROG)
 

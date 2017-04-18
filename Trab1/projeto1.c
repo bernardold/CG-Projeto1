@@ -1,12 +1,11 @@
 /*  
 *   Projeto 1 - CG
 *   
-*   Bernardo Duarte
+*   Bernardo Duarte             8598861
 *   Giovani Ortolani Barbosa    8936648
-*   Giovanni Robira             
-*   Julia Minetto Macias        
+*   Giovanni Robira             8531887           
+*   Julia Minetto Macias        8937329
 */
-
 
 #ifdef __APPLE__
 #include <OpenGL/OpenGL.h>
@@ -25,7 +24,7 @@
 const GLint imageW = 1024, imageH = 640;
 GLfloat theta = 60.0f;
 GLuint texture = 0;
-int leftMouseButtonDown = 0, rightMouseButtonDown = 0;
+int leftButtonDown = 0, rightButtonDown = 0;
 /******************************************************/
 
 void init(void)
@@ -42,9 +41,9 @@ void reshape(GLsizei w, GLsizei h)
 
 void mouseHold(void)
 {
-    if(leftMouseButtonDown)
+    if(leftButtonDown)
         theta += 0.5f;
-    if(rightMouseButtonDown)
+    if(rightButtonDown)
         theta -= 0.5f;
 }
 
@@ -52,11 +51,11 @@ void onMouseClick(int button, int state, int x, int y)
 {
     if(button == GLUT_LEFT_BUTTON)
     {   
-        leftMouseButtonDown = (state == GLUT_DOWN);
+        leftButtonDown = (state == GLUT_DOWN);
     }
     else if(button == GLUT_RIGHT_BUTTON)
     {
-        rightMouseButtonDown = (state == GLUT_DOWN);
+        rightButtonDown = (state == GLUT_DOWN);
     }
  
     glutPostRedisplay();    // Chama a funcao display() para realizar a atualizacao a cada frame
@@ -105,7 +104,6 @@ void retangle(void)
     glBegin(GL_QUADS);
         glVertex2f(204.0f, 455.0f);
         glVertex2f(212.0f, 455.0f);
-        // Equacoes parametrizadas da circunferencia (circ. eh uma elipse)  
         glVertex2f(212.0f, 515.0f);
         glVertex2f(204.0f, 515.0f);
     glEnd();
@@ -115,6 +113,7 @@ void triangles(void)
 {
     int i;
     // Ao fim do loop, a matriz MODELVIEW voltara a ser a identidade
+    // i = 4, 4 triangulos amarelos e 4 triangulos vermelhos
     for(i = 0; i < 4; i++, theta += 90.0f)
     {
         if(theta >= 360.0)

@@ -98,7 +98,7 @@ void background(void)
     glDisable(GL_TEXTURE_2D);
 }
 
-void retangle(void)
+void rectangle(void)
 {   
     glColor3f(0.5f, 0.35f, 0.05f);
     glBegin(GL_QUADS);
@@ -171,7 +171,7 @@ void display(void)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     
-    retangle();
+    rectangle();
     triangles();
     circle();
 
